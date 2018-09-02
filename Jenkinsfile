@@ -14,8 +14,8 @@ def NAMESPACEVAL = "default"
 podTemplate(
   label: label,
   name: label,
-  namespace: "test_jenkins",
-  serviceAccount: "test_jenkins",
+  namespace: "default",
+//  serviceAccount: "test_jenkins",
   envVars: [
     envVar(key: 'CONTAINER_VERSION', value: "${BUILD_ID}"),
   ],
