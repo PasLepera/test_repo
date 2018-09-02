@@ -98,7 +98,8 @@ podTemplate(
           }
           parallel builds
         }
-      }  
+      }
+    }  
     container('helm') {
       if (params.app_deploy) {
         dir('helm') {
@@ -115,5 +116,4 @@ podTemplate(
 			containerLog('dind')
 			containerLog('helm')
     }
-  }
 }
