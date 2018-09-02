@@ -1,0 +1,48 @@
+
+strategy:
+  type: Recreate
+  restartPolicy: Always
+
+containers:
+  nginx:
+    name: nginx
+    image:
+      repository: registry:5000/nginx
+      tag: 1.8
+      pullPolicy: Always
+    containerPort: 80
+    resources:
+      requests:
+        memory: 128Mi
+        cpu: 100m
+      limits:
+        memory: 160Mi
+        cpu: 160m
+    env:
+      - name: FCGI_HTTPS
+        value: "off"
+
+
+persistentVolume:
+  enabled: false
+  accessModes:
+    - ReadWriteOnce
+  existingClaim: ""
+
+  ## Persistent Volume mount root path
+  #
+  mountPath: /var/www/html/persistent_volume
+
+  ## Persistent Volume size
+  #
+  size: 2Gi
+
+service:
+
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+
+  ssl: false

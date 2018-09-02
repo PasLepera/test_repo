@@ -1,0 +1,122 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ template "test_jenkins.fullname" . }}
+  labels:
+    app: {{ template "test_jenkins.name" . }}
+    appVersion: "{{ .Values.appVersion }}"
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    {{- if .Values.labels }}
+{{ toYaml .Values.labels | indent 4 }}
+    {{- end }}
+  {{- if .Values.annotations }}
+  annotations:
+{{ toYaml .Values.annotations | indent 4 }}
+  {{- end }}
+spec:
+  {{- if .Values.replicas }}
+  replicas: {{ .Values.replicas }}
+  {{- end }}
+  {{- if .Values.strategy }}
+  {{- if eq (.Values.strategy.type | lower) "recreate" }}
+  strategy:
+    type: Recreate
+  {{- else if eq (.Values.strategy.type | lower) "rollingupdate" }}
+  strategy:
+    type: RollingUpdate
+    {{- if or .Values.strategy.rollingUpdate.maxUnavailable .Values.strategy.rollingUpdate.maxSurge }}
+    rollingUpdate:
+      {{- if .Values.strategy.rollingUpdate.maxSurge }}
+      maxSurge: {{ .Values.strategy.rollingUpdate.maxSurge }}
+      {{- end }}
+      {{- if .Values.strategy.rollingUpdate.maxUnavailable }}
+      maxUnavailable: {{ .Values.strategy.rollingUpdate.maxUnavailable }}
+      {{- end }}
+    {{- end}}
+  {{- end }}
+  {{- end }}
+  {{- if .Values.minReadySeconds }}
+  minReadySeconds: {{ .Values.minReadySeconds }}
+  {{- end }}
+  {{- if .Values.progressDeadlineSeconds }}
+  progressDeadlineSeconds: {{ .Values.progressDeadlineSeconds }}
+  {{- end }}
+  {{- if .Values.revisionHistoryLimit }}
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app: {{ template "test_jenkins.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "test_jenkins.name" . }}
+        chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+        release: {{ .Release.Name }}
+        heritage: {{ .Release.Service }}
+        {{- if .Values.podLabels }}
+{{ toYaml .Values.podLabels | indent 8 }}
+        {{- end }}
+      {{- if .Values.podAnnotations }}
+      annotations:
+{{ toYaml .Values.podAnnotations | indent 8 }}
+      {{- end }}
+    spec:
+      {{- if .Values.restartPolicy }}
+      restartPolicy: {{ .Values.restartPolicy }}
+      {{- end }}
+      {{- if .Values.affinity }}
+      affinity:
+{{ toYaml .Values.affinity | indent 8 }}
+      {{- end }}
+      {{- if .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.tolerations }}
+      tolerations:
+{{ toYaml .Values.tolerations | indent 8 }}
+      {{- end }}
+      containers:
+        # nginx container
+        - name: "{{ .Values.containers.nginx.name }}"
+          image: "{{ .Values.containers.nginx.image.repository }}:{{ .Values.containers.nginx.image.tag }}"
+          imagePullPolicy: {{ default "" .Values.containers.nginx.image.pullPolicy | quote }}
+          env:
+            - name: APP_VERSION
+              value: "{{ .Values.appVersion }}"
+            {{- if .Values.containers.nginx.env }}
+{{ toYaml .Values.containers.nginx.env | indent 12 }}
+            {{- end}}
+          ports:
+            - name: http
+              protocol: TCP
+              containerPort: {{ .Values.containers.nginx.containerPort }}
+          livenessProbe:
+            httpGet:
+              path: /nginx_status
+              port: {{ .Values.containers.nginx.containerPort }}
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 1
+          {{- if .Values.containers.nginx.resources }}
+          resources:
+{{ toYaml .Values.containers.nginx.resources | indent 10 }}
+          {{- end }}
+          volumeMounts:
+          - name: data
+            mountPath: {{ .Values.persistentVolume.mountPath }}
+        # test_jenkins container
+      volumes:
+        - name: data
+          {{- if .Values.persistentVolume.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ template "test_jenkins.fullname" . }}
+          {{- else }}
+          emptyDir: {}
+          {{- end -}}

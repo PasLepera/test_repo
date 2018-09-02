@@ -1,0 +1,36 @@
+{{- if .Values.ingress.enabled }}
+{{- $serviceName := include "test_jenkins.fullname" . }}
+{{- $servicePort := .Values.service.port }}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ template "test_jenkins.fullname" . }}
+  labels:
+    app: {{ template "test_jenkins.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+    {{- if .Values.ingress.labels }}
+{{ toYaml .Values.ingress.labels | indent 4 }}
+    {{- end }}
+  {{- if .Values.ingress.annotations }}
+  annotations:
+{{ toYaml .Values.ingress.annotations | indent 4 }}
+  {{- end }}
+spec:
+  rules:
+  {{- range .Values.ingress.hosts }}
+    {{- $url := splitList "/" . }}
+    - host: {{ first $url }}
+      http:
+        paths:
+          - path: /{{ rest $url | join "/" }}
+            backend:
+              serviceName: {{ $serviceName }}
+              servicePort: {{ $servicePort }}
+  {{- end }}
+{{- if .Values.ingress.tls }}
+  tls:
+{{ toYaml .Values.ingress.tls | indent 4 }}
+  {{- end }}
+{{- end }}             
