@@ -1,11 +1,9 @@
 
 properties([
   parameters([
-    booleanParam(name: 'persistent_volume', defaultValue: true, description: 'Create new pvc if necessary'),
-    booleanParam(name: 'registry', defaultValue: false, description: 'Create new registry if necessary'),
     booleanParam(name: 'build_nginx', defaultValue: true, description: 'Build nginx container image'),
     booleanParam(name: 'push_nginx', defaultValue: true, description: 'Push builded nginx container image to registry'),
-    booleanParam(name: 'app_deploy', defaultValue: true, description: 'Push builded nginx container image to registry'),
+    booleanParam(name: 'app_deploy', defaultValue: true, description: 'Push builded nginx container image to kubernetes'),
   ])
 ])
 
