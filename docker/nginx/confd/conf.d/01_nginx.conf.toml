@@ -1,0 +1,5 @@
+[template]
+src = "nginx.conf.tmpl"
+dest = "/etc/nginx/nginx.conf"
+keys = []
+check_cmd = "nginx -T -c {{ .src }}"

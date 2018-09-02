@@ -1,0 +1,5 @@
+[template]
+src = "conf.d/default_fastcgi.tmpl"
+dest = "/etc/nginx/conf.d/default_fastcgi"
+keys = []
+check_cmd = "nginx -T"

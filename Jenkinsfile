@@ -22,7 +22,7 @@ podTemplate(
   containers: [
   	containerTemplate(
       name: 'jnlp',
-      image: 'jenkins/jnlp-slave:3.10-1',
+      image: 'jenkins/jnlp-slave:latest',
       args: '${computer.jnlpmac} ${computer.name}',
     ),
     containerTemplate(

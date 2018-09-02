@@ -1,0 +1,5 @@
+[template]
+src = "conf.d/default.override.tmpl"
+dest = "/etc/nginx/conf.d/default.override"
+keys = []
+check_cmd = "nginx -T"
