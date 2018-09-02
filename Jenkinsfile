@@ -116,4 +116,5 @@ podTemplate(
 			containerLog('dind')
 			containerLog('helm')
     }
+  }
 }
