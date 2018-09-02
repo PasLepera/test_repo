@@ -66,8 +66,6 @@ podTemplate(
               }
             }
           }
-
-          parallel builds
         }
       }
     }
