@@ -8,7 +8,7 @@ properties([
 ])
 
 def label = "jenkins-${JOB_NAME}-${BUILD_NUMBER}".replace('/','-')
-def NGINXREGISTRY = "registry:5000/nginx"
+def NGINXREGISTRY = "192.168.39.139:30400/nginx"
 def NAMESPACEVAL = "default"
 
 podTemplate(
