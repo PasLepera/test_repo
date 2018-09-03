@@ -73,7 +73,7 @@ podTemplate(
       container('dind') {
     	stage('Log docker in to container registry') {
         	sh "set -x && \
-              docker login registry:5000"
+              docker login \${NGINXREGISTRY}"
         }
         stage('Push docker containers to registry') {
           def builds = [:]
