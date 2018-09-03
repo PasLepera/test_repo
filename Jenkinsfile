@@ -8,7 +8,8 @@ properties([
 ])
 
 def label = "jenkins-${JOB_NAME}-${BUILD_NUMBER}".replace('/','-')
-def NGINXREGISTRY = "192.168.39.139:30400/nginx"
+def CONTREGISTRY = "192.168.39.139:30400"
+def NGINXREGISTRY = "${CONTREGISTRY}/nginx"
 def NAMESPACEVAL = "default"
 
 podTemplate(
@@ -50,11 +51,11 @@ podTemplate(
     	sh "set -x && \
             mkdir \${WORKSPACE}/build_artifacts/"
     }
-    if (params.build_nginx) {
+//    if (params.build_nginx) {
       stage('Build docker containers') {
         container('dind') {
           def builds = [:]
-          if (params.build_nginx) {
+//          if (params.build_nginx) {
             builds['Build nginx docker container image'] = {
               stage('Build nginx docker container image') {
                 dir('docker/nginx') {
@@ -66,14 +67,14 @@ podTemplate(
               }
             }
           }
-        }
+//        }
       }
-    }
+//    }
     if (params.push_nginx) {
       container('dind') {
     	stage('Log docker in to container registry') {
         	sh "set -x && \
-              docker login \${NGINXREGISTRY}"
+              docker login \${CONTREGISTRY}"
         }
         stage('Push docker containers to registry') {
           def builds = [:]
