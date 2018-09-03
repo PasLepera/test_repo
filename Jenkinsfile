@@ -7,7 +7,7 @@ properties([
   ])
 ])
 
-def label = "my-release-jenkins-slave"
+def label = "jenkins-${JOB_NAME}-${BUILD_NUMBER}".replace('/','-')
 def NGINXREGISTRY = "registry:5000/nginx:1.8"
 def NAMESPACEVAL = "default"
 
