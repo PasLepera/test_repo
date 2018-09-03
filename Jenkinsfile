@@ -50,25 +50,25 @@ podTemplate(
     	sh "set -x && \
             mkdir \${WORKSPACE}/build_artifacts/"
     }
-//    if (params.build_nginx) {
-//      stage('Build docker containers') {
-//        container('dind') {
-//          def builds = [:]
-//          if (params.build_nginx) {
-//            builds['Build nginx docker container image'] = {
-//              stage('Build nginx docker container image') {
-//                dir('docker/nginx') {
-//            	    sh "set -x && \
-//                    	docker build \
-//                    	-t \${NGINXREGISTRY}:v\${CONTAINER_VERSION} \
-//                    	."
-//                }
-//              }
-//            }
-//          }
-//        }
-//      }
-//    }
+    if (params.build_nginx) {
+      stage('Build docker containers') {
+        container('dind') {
+          def builds = [:]
+          if (params.build_nginx) {
+            builds['Build nginx docker container image'] = {
+              stage('Build nginx docker container image') {
+                dir('docker/nginx') {
+            	    sh "set -x && \
+                    	docker build \
+                    	-t \${NGINXREGISTRY}:v\${CONTAINER_VERSION} \
+                    	."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
     if (params.push_nginx) {
       container('dind') {
     	stage('Log docker in to container registry') {
